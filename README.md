@@ -30,6 +30,30 @@ Setup a config file similar to [default.yml](https://github.com/mikhailadvani/aw
 
 `python aws_security_test.py -c config/default.yml -p profile_name` - Will use the credentials from the corresponding profile defined in `~/.aws/config`
 
+#### Run in a docker container
+
+You can run the `aws-security-test` in **docker** and it can be integrated in CI easily:
+
+First, you have to build the image first:
+
+`docker build -t aws-security-test .`
+
+Then you can get the test result via `docker run`:
+
+`docker run -ti -e AWS_DEFAULT_REGION=<AWS_REGION> -e AWS_ACCESS_KEY_ID=<your access key> -e AWS_SECRET_ACCESS_KEY=<your access key_id> -v $(pwd)/artifacts:/output aws-security-test`
+
+Or you can give the environment variables by `--env-file`:
+
+`docker run -ti --env-file <env file> -v $(pwd)/artifacts:/output aws-security-test`
+
+Then the result will output to the `output` directory under your current directory.
+
+You can also give the config file by `-v` or `--volume`:
+
+`docker run -ti --env-file <env file> -v $(pwd)/artifacts:/output -v <your-config-file.yml>:/opt/aws-security-test/config/default.yml aws-security-test`
+
+
+
 #### Artifacts
 
 Certain artifacts will be created at the end of every execution for additional verification. The will be in the artifacts directory
@@ -42,6 +66,3 @@ Certain artifacts will be created at the end of every execution for additional v
 
 # License
 Apache License 2.0
-
-
-
