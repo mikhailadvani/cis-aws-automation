@@ -21,6 +21,10 @@ class NetworkingAudit(unittest.TestCase):
         for securityGroup in self._groupIdsVpcIds(internetOpenSecurityGroups).split(','):
             file.write('\n'+ securityGroup.replace(':',','))
 
+    def testApiTerminationIsDisabled(self):
+        unprotectedInstances = self._instanceWithDisabledTerminantionProtection()
+        self.assertEqual([],unprotectedInstances,"Instance(s) with API Terminantion Enabled :%s. Recommended : " % self._instanceIds(unprotectedInstances)) 
+
     def _getAllSecurityGroups(self):
         securityGroups = []
         for sg in EC2().getSecurityGroups()['SecurityGroups']:
@@ -48,4 +52,13 @@ class NetworkingAudit(unittest.TestCase):
             ids.append(sg.vpcId + ":" + sg.groupId)
         return ",".join(ids)
 
+    def _instanceWithDisabledTerminantionProtection(self):
+        instances = EC2().getInstances().all()
+        return filter(self._disabledTerminationProtection,instances)
 
+    def _disabledTerminationProtection(self,instance):
+        apiTerminationAttributes = instance.describe_attribute(Attribute='disableApiTermination')
+        return apiTerminationAttributes['DisableApiTermination']['Value'] == False
+
+    def _instanceIds(self,instances):
+        return ",".join(map(lambda instance: instance.id, instances))

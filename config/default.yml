@@ -2,6 +2,7 @@ Networking:
   testSshNotOpenFromInternet: True
   testRdpNotOpenFromInternet: True
   testPortsOpenFromTheInternet: True
+  testApiTerminationIsDisabled: True
 
 Iam:
   testRootAccountLoginIsAvoided: True
